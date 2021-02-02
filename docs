@@ -1,0 +1,100 @@
+Work with docker on root previliges
+sudo su
+
+To display all running container
+docker ps
+
+To display all the containers available
+docker ps -a
+
+For building as an image
+docker build --network=host -t <image_name> .
+
+For mounting data from local to docker container
+docker run -it --name <container_name> -v /home/gangadhar/Workspace/Utility_test/input/:/Image_Category_project/input/ -v /home/gangadhar/Workspace/Utility_test/repository/:/Image_Category_project/repository/ <image_name> bash
+
+To run the python program
+python filename.py
+
+If you remove  bash at the end and if you include --rm instead of -it, it will automatically execute the program
+docker run --rm --name <container_name> -v /home/gangadhar/Workspace/Utility_test/input/:/Image_Category_project/input/ -v /home/gangadhar/Workspace/Utility_test/repository/:/Image_Category_project/repository/ <image_name> 
+
+For stopping container
+docker stop test
+
+For removing container
+docker rm test
+
+when you are running docker commands, you should come out of container. 
+Use exit command
+
+To know the size of container
+docker ps --size
+
+Save the image and run it on other system which contains docker
+docker save <image_name> > <image_name>.tar
+
+
+
+
+In other docker machine, just run the following command
+docker load -i <image_name>.tar
+
+If you remove  bash at the end and if you include --rm instead of -it, it will automatically execute the program
+docker run --rm --name <container_name> -v /home/gangadhar/Workspace/Utility_test/input/:/Image_Category_project/input/ -v /home/gangadhar/Workspace/Utility_test/repository/:/Image_Category_project/repository/ <image_name> 
+
+
+If postgresql is running in the localhost, port number issue occurs while you are running postgresql inside the container.
+So stop the postgresql in the localhost using 
+service postgresql stop
+
+
+To download the postgres image
+docker pull postgres
+
+To build the pipeline code as an image
+docker build --network=host -t newcrest_pipeline .
+
+Then run the image by mounting the data
+docker run -it --name geyser_pipeline -v /home/gangadhar/Docker/Newcrest/inputs/:/Newcrest/inputs/ -v /home/gangadhar/Docker/Newcrest/outputs/frames/:/Newcrest/outputs/frames/ -v /home/gangadhar/Docker/Newcrest/outputs/jsons/:/Newcrest/outputs/jsons/ newcrest_pipeline bash
+
+Write a python code for connection between multiple containers
+
+In database.ini file, 
+change the host=localhost to host=<container_name>
+where <container_name> is the container name of postgres image
+ 
+Then run this shell script file
+bash start.sh
+
+To go to the postgres prompt inside the container
+psql -U postgres
+
+After creating database in postgres, to connect to that database
+\c <database_name>
+
+To list all the databases
+\l
+
+To list all tables inside the database
+\dt
+
+To describe the table details
+\dt <table_name>	
+
+To display the attributes of the table
+\d <table_name>
+
+
+
+Create a container for the postgres	
+docker run -it --name database postgres bash
+
+
+Entering the postgres container
+docker exec -it database psql -U postgres
+
+Create the start.sh file. Inside that write a command for creating network then for running both the images.
+docker network create solution
+docker run -itd --name database --net solution -p 5432:5432 postgres
+docker run -it --name geyser_pipeline --net solution -v /home/gangadhar/Docker/Newcrest/inputs/:/Newcrest/inputs/ -v /home/gangadhar/Docker/Newcrest/outputs/frames/:/Newcrest/outputs/frames/ -v /home/gangadhar/Docker/Newcrest/outputs/jsons/:/Newcrest/outputs/jsons/ newcrest_pipeline bash
